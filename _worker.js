@@ -1289,9 +1289,64 @@ function loginPage(tgGroup, siteUrl, githubUrl, pageTitle) {
             .social-links { gap: 10px; margin-top: 10px; }
             .pill { font-size: 0.8rem; padding: 10px 5px; }
         }
+       /* 🎨 白色主题：全屏视觉深度优化方案 */
+        body.light {
+            /* 背景改为更明亮的天空色渐变 */
+            background: linear-gradient(to bottom, #87CEEB 0%, #B0E0E6 30%, #E0F7FA 60%, #F0F9FF 100%) !important;
+            color: #1b2735;
+        }
+
+        /* 登录框：增强毛玻璃质感，减弱阴影 */
+        body.light .glass-box {
+            background: rgba(255, 255, 255, 0.6) !important;
+            border-color: rgba(255, 255, 255, 0.4) !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08) !important;
+            backdrop-filter: blur(20px) saturate(160%) !important;
+        }
+
+        /* 文字适配：深色标题，取消发光 */
+        body.light h2 { color: #1b2735 !important; text-shadow: none !important; }
+        body.light h2::before { filter: none !important; } /* 取消锁头的蓝光 */
+
+        /* 输入框适配 */
+        body.light input { 
+            background: rgba(255, 255, 255, 0.8) !important; 
+            color: #000 !important; 
+            border: 1px solid rgba(0, 128, 255, 0.2) !important;
+        }
+
+        /* 核心优化1：让背景碎片像轻薄的冰片或云朵 */
+        body.light .shard { 
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.4)) !important;
+            box-shadow: 0 8px 32px rgba(255, 255, 255, 0.5) !important; /* 白色发光替代深色阴影 */
+            border: 1px solid rgba(255, 255, 255, 0.8) !important;
+        }
+
+        /* 核心优化2：流星在白色背景下隐身了，改为淡蓝色 */
+        body.light .meteor {
+            background: linear-gradient(to bottom, rgba(79, 172, 254, 0.6), rgba(79, 172, 254, 0.2), transparent) !important;
+            box-shadow: 0 0 10px rgba(79, 172, 254, 0.3) !important;
+        }
+
+        /* 底部按钮：改为更有活力的亮蓝色 */
+        body.light .pill { 
+            background: linear-gradient(135deg, #4facfe, #00f2fe) !important;
+            color: white !important; 
+            border: none !important;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3) !important;
+        }
+        body.light .pill:hover {
+            background: linear-gradient(135deg, #00f2fe, #4facfe) !important;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.5) !important;
+        }
     </style>
 </head>
-<body>
+<body id="mainBody"> <script>
+        // 在渲染任何内容前立即执行，防止闪烁
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light');
+        }
+    </script>
     <div class="stars" id="starsContainer"></div>
     <div class="stars">
         <div class="meteor"></div><div class="meteor"></div><div class="meteor"></div><div class="meteor"></div>
@@ -1342,10 +1397,16 @@ function loginPage(tgGroup, siteUrl, githubUrl, pageTitle) {
             location.reload();
         }
         window.onload = function() {
-            if(!sessionStorage.getItem("is_active")) {
-                document.cookie = "auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
-            }
-        }
+    // [新增] 主题同步初始化
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light');
+    }
+
+    if(!sessionStorage.getItem("is_active")) {
+        document.cookie = "auth=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+}
     </script>
 </body>
 </html>`;
@@ -2898,6 +2959,12 @@ function dashPage(host, uuid, proxyip, subpass, subdomain, converter, env, clien
     </style>
 </head>
 <body id="mainBody">
+    <script>
+        // 管理页同步：确保在 body 样式 display:none 移除前先加上主题类
+        if (localStorage.getItem('theme') === 'light') {
+            document.body.classList.add('light');
+        }
+    </script>
     <!-- 玻璃碎裂背景 -->
     <div class="glass-shards-bg">
         <div class="shard"></div>
@@ -3232,18 +3299,27 @@ function dashPage(host, uuid, proxyip, subpass, subdomain, converter, env, clien
         const UUID = "${jsStr(uuid)}"; const CONVERTER = "${jsStr(converter)}"; const CLIENT_IP = "${jsStr(clientIP)}"; const HAS_AUTH = ${hasAuth};
         const ECH_ON_INIT = ${echEnabled === 'true'}; const ECH_SNI_INIT = "${jsStr(echSni)}"; const ECH_DNS_INIT = "${jsStr(echDns)}";
         function esc(s) { const d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
-
+        
         // 页面加载
         window.addEventListener('DOMContentLoaded', () => {
-            if (HAS_AUTH && !sessionStorage.getItem("is_active")) {
-                document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
-                window.location.reload();
-            } else {
-                document.body.classList.add('loaded');
-                if(!document.getElementById('subDom').value) updateLink();
-                generateStars();
-            }
-        });
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.body.classList.add('light');
+    } else {
+        document.body.classList.remove('light');
+    }
+
+    // ✅ 加上这一行，页面才会从 display: none 变成可见
+    document.body.classList.add('loaded'); 
+
+    if (HAS_AUTH && !sessionStorage.getItem("is_active")) {
+        document.cookie = "auth=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+        window.location.reload();
+    } else {
+        if(!document.getElementById('subDom').value) updateLink();
+        generateStars();
+    }
+});
 
         // 生成星星背景
         function generateStars() {
@@ -3441,9 +3517,12 @@ function dashPage(host, uuid, proxyip, subpass, subdomain, converter, env, clien
                 const d = await res.json();
                 alert(d.msg || (d.success ? '验证通过' : '验证失败'));
             } catch(e) { alert('请求错误'); }
-        }
-
-        function toggleTheme() { document.body.classList.toggle('light'); }
+}
+  function toggleTheme() {
+    const isLight = document.body.classList.toggle('light');
+    // 这一行是关键：持久化存储
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
 
         // ECH UI 控制
         function updateEchUI() {
