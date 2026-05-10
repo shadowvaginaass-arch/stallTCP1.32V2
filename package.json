@@ -1,0 +1,21 @@
+{
+  "name": "stalltcp1.32v2",
+  "version": "1.0.0",
+  "description": "**这是一个基于 Cloudflare Workers / Snippets 的高级节点订阅管理与分发系统。**",
+  "main": "snippets.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shadowvaginaass-arch/stallTCP1.32V2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/shadowvaginaass-arch/stallTCP1.32V2/issues"
+  },
+  "homepage": "https://github.com/shadowvaginaass-arch/stallTCP1.32V2#readme"
+}
